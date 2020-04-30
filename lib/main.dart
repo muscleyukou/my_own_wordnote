@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myownwordnote/screens/home_screen.dart';
+import 'package:myownwordnote/db/database.dart';
 
-void main() => runApp(MyApp());
+MyDatabase database;
+void main() {
+  database=MyDatabase();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
