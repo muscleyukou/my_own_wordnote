@@ -5,7 +5,12 @@ import 'package:myownwordnote/main.dart';
 import 'package:myownwordnote/screens/word_list.dart';
 import 'package:toast/toast.dart';
 
+enum EditStatus{ADD,EDIT};
+
 class EditScreen extends StatefulWidget {
+  final EditStatus status;
+  final Word word;
+  EditScreen({@required this.status,this.word});
   @override
   _EditScreenState createState() => _EditScreenState();
 }

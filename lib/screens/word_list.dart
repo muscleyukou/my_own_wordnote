@@ -36,13 +36,16 @@ class _WordListScreenState extends State<WordListScreen> {
 
   _addNewWord() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => EditScreen()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditScreen(
+                  status: EditStatus.ADD,
+                )));
   }
 
   void _getAllwords() async {
     _wordlist = await database.allWords;
-    setState(() {
-    });
+    setState(() {});
   }
 
   Widget _wordListWidget() {
@@ -64,14 +67,25 @@ class _WordListScreenState extends State<WordListScreen> {
           "${_wordlist[position].strAnswer}",
           style: TextStyle(fontFamily: "Mont"),
         ),
-        onLongPress: ()=>_deleteword(_wordlist[position]),
+        onTap: () => _editWord(_wordlist[position]),
+        onLongPress: () => _deleteword(_wordlist[position]),
       ),
     );
   }
 
-  _deleteword(Word selectedWord) async{
- await   database.deleteWord(selectedWord);
- Toast.show("削除が完了しました", context);
- _getAllwords();
+  _deleteword(Word selectedWord) async {
+    await database.deleteWord(selectedWord);
+    Toast.show("削除が完了しました", context);
+    _getAllwords();
+  }
+
+  _editWord(Word selectedWord) {
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditScreen(
+                  status: EditStatus.EDIT,
+                  word: selectedWord,
+                )));
   }
 }
