@@ -33,7 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             height: 10.0,
           ),
-          _radiobuttons(),
+          //_radiobuttons(),
+          //切替トグルswitch
+          _switch(),
           SizedBox(
             height: 30.0,
           ),
@@ -102,6 +104,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
+  _switch() {
+    return SwitchListTile(title: Text('暗記済の単語を含む'),
+    value: isIncludedMemorizedWords,
+    onChanged: (value){
+      setState(() {
+        isIncludedMemorizedWords=value;
+      });
+    },
+    secondary: Icon(Icons.sort),
+    );
+  }
 
   _onRadioSelected(value) {
     setState(() {
@@ -123,4 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   isIncludedMemorizedWords: isIncludedMemorizedWords,
                 )));
   }
+
+
 }

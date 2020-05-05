@@ -24,6 +24,11 @@ class _WordListScreenState extends State<WordListScreen> {
       appBar: AppBar(
         title: Text('単語一覧'),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.sort),
+              onPressed: () => _sortWords(),
+              tooltip: "記済の単語が下になるようにソート"),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addNewWord(),
@@ -38,7 +43,8 @@ class _WordListScreenState extends State<WordListScreen> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => EditScreen(
+            builder: (context) =>
+                EditScreen(
                   status: EditStatus.ADD,
                 )));
   }
@@ -67,6 +73,8 @@ class _WordListScreenState extends State<WordListScreen> {
           "${_wordlist[position].strAnswer}",
           style: TextStyle(fontFamily: "Mont"),
         ),
+        trailing:
+        _wordlist[position].isMemorized ? Icon(Icons.check_circle) : null,
         onTap: () => _editWord(_wordlist[position]),
         onLongPress: () => _deleteword(_wordlist[position]),
       ),
@@ -74,18 +82,44 @@ class _WordListScreenState extends State<WordListScreen> {
   }
 
   _deleteword(Word selectedWord) async {
-    await database.deleteWord(selectedWord);
-    Toast.show("削除が完了しました", context);
-    _getAllwords();
+    showDialog(context: context,
+        barrierDismissible: false,
+        builder: (_)=>
+        AlertDialog(
+          title: Text(selectedWord.strQuestion),
+          content: Text('削除してもいいですか？'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('はい'),
+              onPressed: ()async{
+                await database.deleteWord(selectedWord);
+                Toast.show("削除が完了しました", context);
+                _getAllwords();
+                Navigator.pop(context);
+              },),
+            FlatButton(onPressed:(){Navigator.pop(context);},
+                child: Text('いいえ'))
+          ]
+          ,
+        )
+    );
+
+
   }
 
   _editWord(Word selectedWord) {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => EditScreen(
+            builder: (context) =>
+                EditScreen(
                   status: EditStatus.EDIT,
                   word: selectedWord,
                 )));
+  }
+
+  _sortWords() async {
+    _wordlist = await database.allWordsSorted;
+    setState(() {});
   }
 }

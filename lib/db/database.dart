@@ -34,7 +34,17 @@ class MyDatabase extends _$MyDatabase {
 
   @override
   // TODO: implement schemaVersion
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+//統合処理
+  MigrationStrategy get migration =>
+      MigrationStrategy(onCreate: (Migrator m) {
+        return m.createAll();
+      }, onUpgrade: (Migrator m, int from, int to) async {
+        if (from == 1) {
+          await m.addColumn(words, words.isMemorized);
+        }
+      });
 
   //create
   Future addWord(Word word) => into(words).insert(word);
@@ -42,12 +52,22 @@ class MyDatabase extends _$MyDatabase {
   //read
   Future<List<Word>> get allWords => select(words).get();
 
-  //update
+  //renew暗記済
+  Future<List<Word>> get allWordsExcludedMemorized =>
+      (select(words)
+        ..where((table) => table.isMemorized.equals(false))).get();
+
+  //暗記済の単語が下になるようにソート
+  Future<List<Word>> get allWordsSorted =>
+      (select(words)
+        ..orderBy([(table)=>OrderingTerm(expression:table.isMemorized)])).get();
+
+  // update
   Future updateWord(Word word) => update(words).replace(word);
 
   //delete
   Future deleteWord(Word word) =>
       (delete(words)
-       ..where((t) => t.strQuestion.equals(word.strQuestion)))
+        ..where((t) => t.strQuestion.equals(word.strQuestion)))
           .go();
 }
